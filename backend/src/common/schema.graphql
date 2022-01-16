@@ -1,0 +1,15 @@
+type Note
+  @model
+  @auth(rules: [{ allow: owner, operations: [create, read, delete, update] }])
+  @key(fields: ["note_id"]) {
+  note_id: ID!
+  note_title: String!
+  note_body: String!
+}
+
+type User @model @aws_cognito_user_pools @aws_iam {
+  name: String
+  phone_number: String
+  email: String
+  username: String
+}

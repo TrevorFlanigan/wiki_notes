@@ -1,0 +1,15 @@
+projects:
+  AmplifyWikiNotes:
+    schemaPath: /graphql/schema.graphql
+    includes:
+      - ../common/**/*.ts
+    excludes:
+      - ./amplify/**
+    extensions:
+      amplify:
+        codeGenTarget: typescript
+        generatedFileName: types/API.ts
+        docsFilePath: ./graphql
+extensions:
+  amplify:
+    version: 3

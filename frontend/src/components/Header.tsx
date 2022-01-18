@@ -18,8 +18,10 @@ const Header = ({ children }: HeaderProps) => {
               <MenuIcon className="w-7 h-7" />
             </label>
           </div>
-          <div className="flex-none hidden lg:block">
-            <ul className="menu horizontal">
+          {/* Top navigation on large screens */}
+
+          <div className="flex-none hidden lg:w-full lg:flex">
+            <ul className="menu horizontal flex-1 flex flex-row justify-between">
               <Links />
             </ul>
           </div>
@@ -27,9 +29,10 @@ const Header = ({ children }: HeaderProps) => {
         {children}
       </div>
       {/* Side drawer on small screens */}
+
       <div className="drawer-side">
         <label htmlFor="my-drawer-3" className="drawer-overlay"></label>
-        <ul className="p-4 overflow-y-auto menu w-80 bg-base-100">
+        <ul className="flex p-4 overflow-y-auto menu w-80 bg-base-100 justify-between">
           <Links />
         </ul>
       </div>

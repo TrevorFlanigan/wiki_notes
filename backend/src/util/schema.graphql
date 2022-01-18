@@ -1,0 +1,164 @@
+type Note {
+  note_id: ID!
+  note_title: String!
+  note_body: String!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+  owner: String
+}
+
+type User @aws_cognito_user_pools @aws_iam {
+  id: ID!
+  name: String
+  phone_number: String
+  email: String
+  username: String
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelNoteConnection {
+  items: [Note]!
+  nextToken: String
+}
+
+input ModelStringFilterInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+}
+
+input ModelIDFilterInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+}
+
+input ModelIntFilterInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+input ModelFloatFilterInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+}
+
+input ModelBooleanFilterInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelNoteFilterInput {
+  note_id: ModelIDFilterInput
+  note_title: ModelStringFilterInput
+  note_body: ModelStringFilterInput
+  and: [ModelNoteFilterInput]
+  or: [ModelNoteFilterInput]
+  not: ModelNoteFilterInput
+}
+
+type Query {
+  getNote(note_id: ID!): Note
+  listNotes(note_id: ID, filter: ModelNoteFilterInput, limit: Int, nextToken: String, sortDirection: ModelSortDirection): ModelNoteConnection
+  getUser(id: ID!): User
+  listUsers(filter: ModelUserFilterInput, limit: Int, nextToken: String): ModelUserConnection
+}
+
+input CreateNoteInput {
+  note_id: ID!
+  note_title: String!
+  note_body: String!
+}
+
+input UpdateNoteInput {
+  note_id: ID!
+  note_title: String
+  note_body: String
+}
+
+input DeleteNoteInput {
+  note_id: ID!
+}
+
+type Mutation {
+  createNote(input: CreateNoteInput!): Note
+  updateNote(input: UpdateNoteInput!): Note
+  deleteNote(input: DeleteNoteInput!): Note
+  createUser(input: CreateUserInput!): User
+  updateUser(input: UpdateUserInput!): User
+  deleteUser(input: DeleteUserInput!): User
+}
+
+type Subscription {
+  onCreateNote(owner: String!): Note @aws_subscribe(mutations: ["createNote"])
+  onUpdateNote(owner: String!): Note @aws_subscribe(mutations: ["updateNote"])
+  onDeleteNote(owner: String!): Note @aws_subscribe(mutations: ["deleteNote"])
+  onCreateUser: User @aws_subscribe(mutations: ["createUser"])
+  onUpdateUser: User @aws_subscribe(mutations: ["updateUser"])
+  onDeleteUser: User @aws_subscribe(mutations: ["deleteUser"])
+}
+
+type ModelUserConnection {
+  items: [User]!
+  nextToken: String
+}
+
+input ModelUserFilterInput {
+  name: ModelStringFilterInput
+  phone_number: ModelStringFilterInput
+  email: ModelStringFilterInput
+  username: ModelStringFilterInput
+  and: [ModelUserFilterInput]
+  or: [ModelUserFilterInput]
+  not: ModelUserFilterInput
+}
+
+input CreateUserInput {
+  id: ID
+  name: String
+  phone_number: String
+  email: String
+  username: String
+}
+
+input UpdateUserInput {
+  id: ID!
+  name: String
+  phone_number: String
+  email: String
+  username: String
+}
+
+input DeleteUserInput {
+  id: ID!
+}

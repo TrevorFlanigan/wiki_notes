@@ -1,10 +1,15 @@
+// User Profile Data Access Object
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { WikiNotesDynamoDBStack } from "../../lib/wiki-notes-dynamodb-stack";
 export type UserProfile = {
   name: string; // Full Name (e.g. "John Doe")
   phone_number: string; // Phone Number (e.g. "+16041111111")
   email: string; // Email (e.g. "abc@xyz.com")
   username: string; // Username (e.g. john.doe)
+};
+
+// This must be consistent with the Table Name in WikiNotesDynamoDBStack
+const WikiNotesDynamoDBStack = {
+  USER_TABLE_NAME: "users",
 };
 
 export class UserProfileDao {

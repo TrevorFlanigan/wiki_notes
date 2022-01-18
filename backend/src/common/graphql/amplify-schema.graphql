@@ -1,3 +1,5 @@
+# Schema with Amplify directives to be used by the transformation script
+
 type Note
   @model
   @auth(rules: [{ allow: owner, operations: [create, read, delete, update] }])

@@ -30,8 +30,8 @@ export class WikiNotesCognitoStack extends Stack {
   constructor(scope: Construct, id: string, props: StackProps) {
     super(scope, id, props);
 
-    const lambdaRole = new Role(this, "FirstResponderCognitoLambdaRole", {
-      roleName: "FirstResponderCognitoLambdaRole",
+    const lambdaRole = new Role(this, "WikiNotesCognitoLambdaRole", {
+      roleName: "WikiNotesCognitoLambdaRole",
       assumedBy: new ServicePrincipal("lambda.amazonaws.com"),
       inlinePolicies: {
         additional: new PolicyDocument({
@@ -61,28 +61,24 @@ export class WikiNotesCognitoStack extends Stack {
       },
     });
 
-    const createServiceDeskProfileFn = new lambda.Function(
-      this,
-      "CreateServiceDeskProfile",
-      {
-        functionName: "Service-Desk-Create",
-        code: new lambda.AssetCode("build/src"),
-        handler: "service-desk-create.handler",
-        runtime: lambda.Runtime.NODEJS_12_X,
-        memorySize: 512,
-        timeout: cdk.Duration.seconds(30),
-        role: lambdaRole,
-      }
-    );
+    const createUserProfileFn = new lambda.Function(this, "CreateUserProfile", {
+      functionName: "User-Create",
+      code: new lambda.AssetCode("build/src"),
+      handler: "user-create.handler",
+      runtime: lambda.Runtime.NODEJS_12_X,
+      memorySize: 512,
+      timeout: cdk.Duration.seconds(30),
+      role: lambdaRole,
+    });
 
     // User Pool
-    const userPool = new UserPool(this, "FirstResponderAdminUserPool", {
-      userPoolName: "first-responder-admin-user-pool",
+    const userPool = new UserPool(this, "WikiNotesUserPool", {
+      userPoolName: "wiki-notes-user-pool",
       selfSignUpEnabled: true,
       userVerification: {
-        emailSubject: "Verify your email for First Responder Service Desk!",
+        emailSubject: "Verify your email for WikiNotes!",
         emailBody:
-          "Hello {username}, Thanks for signing up to our First Responder Service Desk! Your verification code is {####}",
+          "Hello {username}, Thanks for signing up for WikiNotes! Your verification code is {####}",
         emailStyle: VerificationEmailStyle.CODE,
       },
       signInAliases: {
@@ -108,7 +104,7 @@ export class WikiNotesCognitoStack extends Stack {
       },
       accountRecovery: AccountRecovery.EMAIL_ONLY,
       lambdaTriggers: {
-        postConfirmation: createServiceDeskProfileFn,
+        postConfirmation: createUserProfileFn,
       },
     });
     this.UserPoolId = userPool.userPoolId;
@@ -116,35 +112,31 @@ export class WikiNotesCognitoStack extends Stack {
     // User Pool Client
     const userPoolClient = new CfnUserPoolClient(
       this,
-      "FirstResponderAdminUserPoolClient",
+      "WikiNotesUserPoolClient",
       {
-        clientName: "FirstResponderAdminUserPoolClient",
+        clientName: "WikiNotesUserPoolClient",
         userPoolId: userPool.userPoolId,
         explicitAuthFlows: ["ALLOW_USER_SRP_AUTH", "ALLOW_REFRESH_TOKEN_AUTH"],
       }
     );
 
     // Identity Pool
-    const identityPool = new CfnIdentityPool(
-      this,
-      "FirstResponderAdminIdentityPool",
-      {
-        allowUnauthenticatedIdentities: false,
-        cognitoIdentityProviders: [
-          {
-            clientId: userPoolClient.ref,
-            providerName: userPool.userPoolProviderName,
-          },
-        ],
-      }
-    );
+    const identityPool = new CfnIdentityPool(this, "WikiNotesIdentityPool", {
+      allowUnauthenticatedIdentities: false,
+      cognitoIdentityProviders: [
+        {
+          clientId: userPoolClient.ref,
+          providerName: userPool.userPoolProviderName,
+        },
+      ],
+    });
 
     // Unauthenticated Role
     const unauthenticatedRole = new Role(
       this,
-      "FirstResponderAdmin_Website_Unauthenticated_Role",
+      "WikiNotes_Unauthenticated_Role",
       {
-        roleName: "FirstResponderAdmin_Website_Unauthenticated_Role",
+        roleName: "WikiNotes_Unauthenticated_Role",
         assumedBy: new FederatedPrincipal(
           "cognito-identity.amazonaws.com",
           {
@@ -161,25 +153,21 @@ export class WikiNotesCognitoStack extends Stack {
     );
 
     // Authenticated Role
-    const authenticatedRole = new Role(
-      this,
-      "FirstResponderAdmin_Website_Authenticated_Role",
-      {
-        roleName: "FirstResponderAdmin_Website_Authenticated_Role",
-        assumedBy: new FederatedPrincipal(
-          "cognito-identity.amazonaws.com",
-          {
-            StringEquals: {
-              "cognito-identity.amazonaws.com:aud": identityPool.ref,
-            },
-            "ForAnyValue:StringLike": {
-              "cognito-identity.amazonaws.com:amr": "authenticated",
-            },
+    const authenticatedRole = new Role(this, "WikiNotes_Authenticated_Role", {
+      roleName: "WikiNotes_Authenticated_Role",
+      assumedBy: new FederatedPrincipal(
+        "cognito-identity.amazonaws.com",
+        {
+          StringEquals: {
+            "cognito-identity.amazonaws.com:aud": identityPool.ref,
           },
-          "sts:AssumeRoleWithWebIdentity"
-        ),
-      }
-    );
+          "ForAnyValue:StringLike": {
+            "cognito-identity.amazonaws.com:amr": "authenticated",
+          },
+        },
+        "sts:AssumeRoleWithWebIdentity"
+      ),
+    });
     authenticatedRole.addManagedPolicy(
       ManagedPolicy.fromAwsManagedPolicyName("AWSAppSyncInvokeFullAccess")
     );
@@ -187,7 +175,7 @@ export class WikiNotesCognitoStack extends Stack {
     // Identity Pool Role Attachment
     new CfnIdentityPoolRoleAttachment(
       this,
-      "FirstResponderAdminIdentityPoolRoleAttachment",
+      "WikiNotesIdentityPoolRoleAttachment",
       {
         identityPoolId: identityPool.ref,
         roles: {

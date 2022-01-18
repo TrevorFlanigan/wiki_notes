@@ -2,10 +2,10 @@
   "compilerOptions": {
     "target": "ES2018",
     "module": "commonjs",
-    "lib": [
-      "es2018"
-    ],
-    "declaration": true,
+    "lib": ["es2018"],
+    "outDir": "build",
+    "declaration": false,
+    "typeRoots": ["./node_modules/@types"],
     "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
@@ -18,13 +18,7 @@
     "inlineSourceMap": true,
     "inlineSources": true,
     "experimentalDecorators": true,
-    "strictPropertyInitialization": false,
-    "typeRoots": [
-      "./node_modules/@types"
-    ]
+    "strictPropertyInitialization": false
   },
-  "exclude": [
-    "node_modules",
-    "cdk.out"
-  ]
+  "exclude": ["node_modules", "cdk.out"]
 }

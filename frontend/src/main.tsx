@@ -1,5 +1,14 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import Home from "./pages/Home";
+import Amplify from "aws-amplify";
+import awsconfig from "./aws-exports.js";
+import App from "./App";
+import { withAuthenticator } from "@aws-amplify/ui-react";
 
-ReactDOM.render(<Home />, document.getElementById("root"));
+Amplify.configure(awsconfig);
+
+const AuthenticatorApp = withAuthenticator(App, {
+  signUpAttributes: ["name", "email"],
+});
+ReactDOM.render(<AuthenticatorApp />, document.getElementById("root"));

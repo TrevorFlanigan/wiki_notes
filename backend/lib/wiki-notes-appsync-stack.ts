@@ -41,7 +41,7 @@ export class WikiNotesAppSyncStack extends Stack {
     const userPool = UserPool.fromUserPoolId(this, "UserPool", userPoolId);
     const api = new GraphqlApi(this, "wikiNotesGraphQLAPI", {
       name: "wikiNotesGraphQLAPI",
-      schema: Schema.fromAsset("src/common/graphql/schema.graphql"),
+      schema: Schema.fromAsset("src/util/schema.graphql"),
       authorizationConfig: {
         defaultAuthorization: {
           authorizationType: authorizationType,
@@ -155,19 +155,19 @@ const generateMappingTemplate = (
     case MappingTemplateType.QUERY:
       return {
         requestMappingTemplate: MappingTemplate.fromFile(
-          `../vtl/Query.${mappingName}.req.vtl`
+          `./vtl/Query.${mappingName}.req.vtl`
         ),
         responseMappingTemplate: MappingTemplate.fromFile(
-          `../vtl/Query.${mappingName}.res.vtl`
+          `./vtl/Query.${mappingName}.res.vtl`
         ),
       };
     case MappingTemplateType.MUTATION:
       return {
         requestMappingTemplate: MappingTemplate.fromFile(
-          `../vtl/Mutation.${mappingName}.req.vtl`
+          `./vtl/Mutation.${mappingName}.req.vtl`
         ),
         responseMappingTemplate: MappingTemplate.fromFile(
-          `../vtl/Mutation.${mappingName}.res.vtl`
+          `./vtl/Mutation.${mappingName}.res.vtl`
         ),
       };
     default:

@@ -2,6 +2,7 @@ import React from "react";
 
 const Note = () => {
   const [title, setTitle] = React.useState("New Note");
+
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === "Enter") {
       event.preventDefault();

@@ -5,6 +5,7 @@
     "backend": "bin/backend.js"
   },
   "scripts": {
+    "redeploy-all": "tsc && cdk synth && cdk deploy --all",
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",

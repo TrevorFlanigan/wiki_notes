@@ -1,17 +1,17 @@
 import AWS = require("aws-sdk");
-import { ServiceDeskProfileDao } from "./ddb/service-desk-profile-dao";
+import { UserProfileDao } from "./ddb/user-profile-dao";
 
 const db = new AWS.DynamoDB.DocumentClient({ region: "us-east-1" });
 
 /**
- * Creates a new service desk profile after the user confirms their signup.
+ * Creates a new user profile after the user confirms their signup.
  */
 export const handler = async (
   event: any = {},
   context: any,
   callback: any
 ): Promise<any> => {
-  console.log("Creating service desk profile...");
+  console.log("Creating user profile...");
   console.log(event);
 
   const userName = event["userName"];
@@ -19,8 +19,8 @@ export const handler = async (
   const phoneNumber = event["request"]["userAttributes"]["phone_number"];
   const email = event["request"]["userAttributes"]["email"];
 
-  const dao = new ServiceDeskProfileDao(db);
-  await dao.createServiceDeskProfile({
+  const dao = new UserProfileDao(db);
+  await dao.createUserProfile({
     name: name,
     email: email,
     phone_number: phoneNumber,

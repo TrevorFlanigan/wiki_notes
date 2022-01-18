@@ -9,7 +9,7 @@ export class WikiNotesDynamoDBStack extends Stack {
 
   private static USER_TABLE_ID = "UsersDynamoTable";
   public static USER_TABLE_NAME = "users";
-  public static USER_KEY_NAME = "user_id";
+  public static USER_KEY_NAME = "username";
   constructor(app: cdk.App, id: string, props?: StackProps) {
     super(app, id, props);
 
@@ -19,7 +19,7 @@ export class WikiNotesDynamoDBStack extends Stack {
       {
         tableName: WikiNotesDynamoDBStack.USER_TABLE_NAME,
         partitionKey: {
-          name: "username",
+          name: WikiNotesDynamoDBStack.USER_KEY_NAME,
           type: AttributeType.STRING,
         },
         billingMode: BillingMode.PAY_PER_REQUEST,

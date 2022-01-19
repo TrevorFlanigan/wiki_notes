@@ -9,9 +9,9 @@ type Note
   note_body: String!
 }
 
-type User @model @aws_cognito_user_pools @aws_iam {
+type User @model @aws_cognito_user_pools @aws_iam @key(fields: ["username"]) {
+  username: String!
   name: String
   phone_number: String
   email: String
-  username: String
 }

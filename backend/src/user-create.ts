@@ -18,6 +18,7 @@ export const handler = async (
   const name = event["request"]["userAttributes"]["name"];
   const phoneNumber = event["request"]["userAttributes"]["phone_number"];
   const email = event["request"]["userAttributes"]["email"];
+  const id = event["request"]["userAttributes"]["sub"];
 
   const dao = new UserProfileDao(db);
   await dao.createUserProfile({

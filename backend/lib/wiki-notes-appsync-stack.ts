@@ -21,6 +21,7 @@ import {
 import { WikiNotesDynamoDBStack } from "./wiki-notes-dynamodb-stack";
 import lambda = require("@aws-cdk/aws-lambda");
 import cdk = require("@aws-cdk/core");
+import { WikiNotesCognitoStack } from "./wiki-notes-cognito-stack";
 
 /**
  * WikiNotesAppSyncStack defines a GraphQL API for accessing DynamoDB tables.
@@ -87,48 +88,65 @@ export class WikiNotesAppSyncStack extends Stack {
 
     // DynamoDB DataSource
 
-    // DataSource to connect to meeting-detail DDB table
-    // Import meeting-detail DDB table and grant AppSync to access the DDB table
-    const notesTable = Table.fromTableAttributes(this, "notesTable", {
-      tableName: WikiNotesDynamoDBStack.NOTES_TABLE_NAME,
-    });
-    notesTable.grantFullAccess(wikiNotesAppSyncRole);
-
-    // Define Request DDB DataSource
-    const notesTableDataSource = api.addDynamoDbDataSource(
-      "notesTableDataSource",
-      notesTable
+    generateDataSourceAndMappingTemplates(
+      api,
+      wikiNotesAppSyncRole,
+      this,
+      WikiNotesDynamoDBStack.NOTES_TABLE_NAME,
+      "note",
+      "notes"
     );
 
-    notesTableDataSource.createResolver({
-      typeName: "Query",
-      fieldName: "getNote",
-      ...generateMappingTemplate(MappingTemplateType.QUERY, "getNote"),
-    });
+    generateDataSourceAndMappingTemplates(
+      api,
+      wikiNotesAppSyncRole,
+      this,
+      "users",
+      "user",
+      "users"
+    );
+    // DataSource to connect to meeting-detail DDB table
+    // Import meeting-detail DDB table and grant AppSync to access the DDB table
+    // const notesTable = Table.fromTableAttributes(this, "notesTable", {
+    //   tableName: WikiNotesDynamoDBStack.NOTES_TABLE_NAME,
+    // });
+    // notesTable.grantFullAccess(wikiNotesAppSyncRole);
 
-    notesTableDataSource.createResolver({
-      typeName: "Query",
-      fieldName: "listNotes",
-      ...generateMappingTemplate(MappingTemplateType.QUERY, "listNotes"),
-    });
+    // // // Define Request DDB DataSource
+    // const notesTableDataSource = api.addDynamoDbDataSource(
+    //   "notesTableDataSource",
+    //   notesTable
+    // );
 
-    notesTableDataSource.createResolver({
-      typeName: "Mutation",
-      fieldName: "createNote",
-      ...generateMappingTemplate(MappingTemplateType.MUTATION, "createNote"),
-    });
+    // notesTableDataSource.createResolver({
+    //   typeName: "Query",
+    //   fieldName: "getNote",
+    //   ...generateMappingTemplate(MappingTemplateType.QUERY, "getNote"),
+    // });
 
-    notesTableDataSource.createResolver({
-      typeName: "Mutation",
-      fieldName: "deleteNote",
-      ...generateMappingTemplate(MappingTemplateType.MUTATION, "deleteNote"),
-    });
+    // notesTableDataSource.createResolver({
+    //   typeName: "Query",
+    //   fieldName: "listNotes",
+    //   ...generateMappingTemplate(MappingTemplateType.QUERY, "listNotes"),
+    // });
 
-    notesTableDataSource.createResolver({
-      typeName: "Mutation",
-      fieldName: "updateNote",
-      ...generateMappingTemplate(MappingTemplateType.MUTATION, "updateNote"),
-    });
+    // notesTableDataSource.createResolver({
+    //   typeName: "Mutation",
+    //   fieldName: "createNote",
+    //   ...generateMappingTemplate(MappingTemplateType.MUTATION, "createNote"),
+    // });
+
+    // notesTableDataSource.createResolver({
+    //   typeName: "Mutation",
+    //   fieldName: "deleteNote",
+    //   ...generateMappingTemplate(MappingTemplateType.MUTATION, "deleteNote"),
+    // });
+
+    // notesTableDataSource.createResolver({
+    //   typeName: "Mutation",
+    //   fieldName: "updateNote",
+    //   ...generateMappingTemplate(MappingTemplateType.MUTATION, "updateNote"),
+    // });
 
     // Cloudformation Outputs
     new CfnOutput(this, "GraphQLEndpoint", {
@@ -173,4 +191,65 @@ const generateMappingTemplate = (
     default:
       throw new Error("Invalid template type");
   }
+};
+
+const generateDataSourceAndMappingTemplates = (
+  api: GraphqlApi,
+  appSyncRole: Role,
+  app: Construct,
+  tableName: string,
+  singular: string,
+  plural = singular + "s"
+) => {
+  const titleCase = singular.charAt(0).toUpperCase() + singular.slice(1);
+  const titleCases = plural.charAt(0).toUpperCase() + plural.slice(1);
+
+  const table = Table.fromTableAttributes(app, `${plural}Table`, {
+    tableName,
+  });
+  table.grantFullAccess(appSyncRole);
+
+  const dataSource = api.addDynamoDbDataSource(
+    `${plural}TableDataSource`,
+    table
+  );
+
+  dataSource.createResolver({
+    typeName: "Query",
+    fieldName: `get${titleCase}`,
+    ...generateMappingTemplate(MappingTemplateType.QUERY, `get${titleCase}`),
+  });
+
+  dataSource.createResolver({
+    typeName: "Query",
+    fieldName: `list${titleCases}`,
+    ...generateMappingTemplate(MappingTemplateType.QUERY, `list${titleCases}`),
+  });
+
+  dataSource.createResolver({
+    typeName: "Mutation",
+    fieldName: `create${titleCase}`,
+    ...generateMappingTemplate(
+      MappingTemplateType.MUTATION,
+      `create${titleCase}`
+    ),
+  });
+
+  dataSource.createResolver({
+    typeName: "Mutation",
+    fieldName: `delete${titleCase}`,
+    ...generateMappingTemplate(
+      MappingTemplateType.MUTATION,
+      `delete${titleCase}`
+    ),
+  });
+
+  dataSource.createResolver({
+    typeName: "Mutation",
+    fieldName: `update${titleCase}`,
+    ...generateMappingTemplate(
+      MappingTemplateType.MUTATION,
+      `update${titleCase}`
+    ),
+  });
 };

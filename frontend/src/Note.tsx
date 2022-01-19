@@ -1,8 +1,15 @@
 import React from "react";
+import { useLocation } from "react-router-dom";
+import NoteType from "./types/NoteType";
 
 const Note = () => {
-  const [title, setTitle] = React.useState("New Note");
+  const location = useLocation();
+  const state = location.state as { note: NoteType };
 
+  const [title, setTitle] = React.useState(
+    state?.note.note_title || "New Note"
+  );
+  const [body, setBody] = React.useState(state?.note.note_body || "");
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === "Enter") {
       event.preventDefault();
@@ -27,6 +34,8 @@ const Note = () => {
       ></textarea>
       <div className="border-2 border-green-400 flex flex-col flex-1">
         <textarea
+          value={body}
+          onChange={(event) => setBody(event.target.value)}
           style={{
             resize: "none",
             fontFamily: "Arial",

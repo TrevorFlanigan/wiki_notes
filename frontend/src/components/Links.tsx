@@ -5,7 +5,7 @@ import { LogoutIcon } from "@heroicons/react/solid";
 const Links = () => {
   return (
     <>
-      <div className="flex lg:flex-row">
+      <div className="flex flex-col lg:flex-row">
         <li>
           <Link to="/" className="rounded-btn">
             Home
@@ -13,7 +13,12 @@ const Links = () => {
         </li>
         <li>
           <Link to="/notes" className="rounded-btn">
-            Item 2
+            All Notes
+          </Link>
+        </li>
+        <li>
+          <Link to="/newNote" className="rounded-btn">
+            New Note
           </Link>
         </li>
       </div>

@@ -32,6 +32,7 @@
     "graphql-dynamodb-transformer": "^7.2.14",
     "graphql-key-transformer": "^3.2.14",
     "graphql-transformer-core": "^7.3.5",
-    "source-map-support": "^0.5.16"
+    "source-map-support": "^0.5.16",
+    "uuid": "^8.3.2"
   }
 }

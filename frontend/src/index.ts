@@ -7,19 +7,32 @@ import { API } from "aws-amplify";
 // whether you're running in development or production).
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 
-const menu = new Menu();
+const menu = Menu.buildFromTemplate([
+  { role: "copy" },
+  { role: "paste" },
+  { role: "cut" },
+]);
 
 menu.append(
   new MenuItem({
-    label: "Hello",
+    label: "File",
     submenu: [
       {
-        role: "help",
+        label: "Save",
         accelerator: process.platform === "darwin" ? "Cmd+S" : "Ctrl+S",
         click: (menuItem, browserWindow, event) => {
           console.log(browserWindow);
         },
       },
+      { type: "separator" },
+      { role: "cut" },
+      { role: "copy" },
+      { role: "paste" },
+      { type: "separator" },
+      { role: "undo" },
+      { role: "redo" },
+      { type: "separator" },
+      { role: "quit" },
     ],
   })
 );

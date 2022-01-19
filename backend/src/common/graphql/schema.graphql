@@ -8,11 +8,10 @@ type Note {
 }
 
 type User @aws_cognito_user_pools @aws_iam {
-  id: ID!
+  username: String!
   name: String
   phone_number: String
   email: String
-  username: String
   createdAt: AWSDateTime!
   updatedAt: AWSDateTime!
 }
@@ -90,8 +89,8 @@ input ModelNoteFilterInput {
 type Query {
   getNote(note_id: ID!): Note
   listNotes(note_id: ID, filter: ModelNoteFilterInput, limit: Int, nextToken: String, sortDirection: ModelSortDirection): ModelNoteConnection
-  getUser(id: ID!): User
-  listUsers(filter: ModelUserFilterInput, limit: Int, nextToken: String): ModelUserConnection
+  getUser(username: String!): User
+  listUsers(username: String, filter: ModelUserFilterInput, limit: Int, nextToken: String, sortDirection: ModelSortDirection): ModelUserConnection
 }
 
 input CreateNoteInput {
@@ -134,31 +133,29 @@ type ModelUserConnection {
 }
 
 input ModelUserFilterInput {
+  username: ModelStringFilterInput
   name: ModelStringFilterInput
   phone_number: ModelStringFilterInput
   email: ModelStringFilterInput
-  username: ModelStringFilterInput
   and: [ModelUserFilterInput]
   or: [ModelUserFilterInput]
   not: ModelUserFilterInput
 }
 
 input CreateUserInput {
-  id: ID
+  username: String!
   name: String
   phone_number: String
   email: String
-  username: String
 }
 
 input UpdateUserInput {
-  id: ID!
+  username: String!
   name: String
   phone_number: String
   email: String
-  username: String
 }
 
 input DeleteUserInput {
-  id: ID!
+  username: String!
 }

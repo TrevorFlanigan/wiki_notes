@@ -3,6 +3,7 @@ projects:
     schemaPath: /graphql/schema.graphql
     includes:
       - ../common/**/*.ts
+      - ../common/graphql/aws_directives.graphql
     excludes:
       - ./amplify/**
     extensions:

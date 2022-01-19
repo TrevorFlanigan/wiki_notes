@@ -34,5 +34,9 @@ fsExtra.emptyDirSync('../../vtl');
 
 Object.keys(out.resolvers).forEach(key => {
   const vtl = out.resolvers[key];
+  if (key.match(/.create.*\.req/)) {
+    // console.log(vtl);
+    console.log(key);
+  }
   fs.writeFileSync(path.resolve('../../vtl', key), vtl);
 });
